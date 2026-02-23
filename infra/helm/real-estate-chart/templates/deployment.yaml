@@ -5,6 +5,9 @@ kind: Deployment
 metadata:
   name: real-estate-api
   namespace: {{ .Values.namespace }}
+   # Auto-reload when secrets change
+  annotations:
+    secrets.infisical.com/auto-reload: "true"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
