@@ -21,10 +21,10 @@ terraform {
   }
 
   backend "remote" {
-    organization = "job-board"
+    organization = "real-estate"
 
     workspaces {
-      name = "job-board-dev-scaleway"
+      name = "real-estate-app"
     }
   }
 }
