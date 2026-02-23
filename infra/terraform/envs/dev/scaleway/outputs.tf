@@ -23,3 +23,9 @@ output "cluster_version" {
   description = "Kubernetes version"
   value       = module.kubernetes.cluster_version
 }
+
+output "kubeconfig" {
+  description = "Kubeconfig for the Scaleway Kubernetes cluster"
+  sensitive   = true
+  value       = module.kubernetes.kubeconfig
+}
