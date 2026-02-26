@@ -79,6 +79,12 @@ module "kubernetes" {
   project_id         = var.scaleway_project_id
 }
 
+module "infisical_operator" {
+  source = "../../../modules/scaleway/infisical-operator"
+
+  depends_on = [module.kubernetes]
+}
+
 module "argocd" {
   source = "../../../modules/argocd-bootstrap"
 
