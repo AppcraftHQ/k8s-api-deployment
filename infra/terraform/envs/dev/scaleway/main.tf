@@ -80,7 +80,7 @@ module "kubernetes" {
 }
 
 module "infisical_operator" {
-  source = "../../../modules/scaleway/infisical-operator"
+  source = "../../../modules/infisical-operator"
 
   depends_on = [module.kubernetes]
 }
