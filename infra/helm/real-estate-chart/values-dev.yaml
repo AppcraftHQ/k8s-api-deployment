@@ -17,6 +17,12 @@ service:
   port: 8080
   name: real-estate-api-service
 
+ingress:
+  enabled: true
+  name: real-estate-ingress
+  host: api.infrajobs.dev
+  tlsSecretName: api-estate-tls
+
 namespace: dev-real-estate
 
 config:
