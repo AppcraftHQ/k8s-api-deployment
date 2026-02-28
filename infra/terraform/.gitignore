@@ -1,0 +1,36 @@
+# Terraform directories
+**/.terraform/*
+
+# State files
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive files
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config
+.terraformrc
+terraform.rc
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+
+# Kubeconfig
+kubeconfig
+*.kubeconfig
+
+# Lock file (commit this)
+!.terraform.lock.hcl
