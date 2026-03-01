@@ -13,7 +13,7 @@ func RegisterRoutes(server *gin.Engine) {
 			"http://localhost:3000",     // Next.js Frontend
 			"http://localhost:8080",     // Local Golang APIs
 			"http://test.example.local", // Ingress local
-			"https://example.com",       // Production frontend (Vercel)
+			"https://example.com",       // Production frontend
 			"https://test.example.com",  // Production Golang APIs
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -27,6 +27,7 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/properties", CreateProperty)
 	server.GET("/properties/:id", GetProperty)
 
-	// Health check endpoint
-	server.GET("/healthz", healthCheck)
+	// Health check endpoints
+	server.GET("/health", HealthCheck)
+	server.GET("/ready", ReadinessCheck)
 }

@@ -57,7 +57,12 @@ func GetProperty(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, property)
 }
 
-// Health check endpoint
-func healthCheck(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
+// Health check endpoint for liveness probe
+func HealthCheck(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"status": "app is healthy"})
+}
+
+// Readiness check endpoint for readiness probe
+func ReadinessCheck(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"status": "app is ready to receive traffic"})
 }
