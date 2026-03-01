@@ -6,6 +6,18 @@ terraform {
       source  = "scaleway/scaleway"
       version = "~> 2.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.11"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14"
+    }
   }
 
   backend "remote" {
@@ -25,6 +37,33 @@ provider "scaleway" {
   zone            = var.zone
 }
 
+provider "helm" {
+  kubernetes {
+    host  = module.kubernetes.kubeconfig_host
+    token = module.kubernetes.kubeconfig_token
+    cluster_ca_certificate = base64decode(
+      module.kubernetes.kubeconfig_cluster_ca_certificate
+    )
+  }
+}
+
+provider "kubernetes" {
+  host  = module.kubernetes.kubeconfig_host
+  token = module.kubernetes.kubeconfig_token
+  cluster_ca_certificate = base64decode(
+    module.kubernetes.kubeconfig_cluster_ca_certificate
+  )
+}
+
+provider "kubectl" {
+  host  = module.kubernetes.kubeconfig_host
+  token = module.kubernetes.kubeconfig_token
+  cluster_ca_certificate = base64decode(
+    module.kubernetes.kubeconfig_cluster_ca_certificate
+  )
+  load_config_file = false
+}
+
 module "kubernetes" {
   source = "../../../modules/scaleway/kubernetes"
 
@@ -38,4 +77,24 @@ module "kubernetes" {
   max_nodes          = var.max_nodes
   tags               = var.tags
   project_id         = var.scaleway_project_id
+}
+
+module "infisical_operator" {
+  source = "../../../modules/infisical-operator"
+
+  depends_on = [module.kubernetes]
+}
+
+module "argocd" {
+  source = "../../../modules/argocd-bootstrap"
+
+  repo_url                = var.repo_url
+  target_revision         = var.target_revision
+  bootstrap_path          = var.bootstrap_path
+  infisical_client_id     = var.infisical_client_id
+  infisical_client_secret = var.infisical_client_secret
+  infisical_project_slug  = var.infisical_project_slug
+  infisical_env_slug      = var.infisical_env_slug
+
+  depends_on = [module.kubernetes]
 }
