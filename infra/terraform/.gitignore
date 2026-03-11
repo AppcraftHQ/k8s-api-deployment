@@ -32,5 +32,5 @@ terraform.rc
 kubeconfig
 *.kubeconfig
 
-# Lock file (commit this)
-!.terraform.lock.hcl
+# Lock file
+.terraform.lock.hcl
