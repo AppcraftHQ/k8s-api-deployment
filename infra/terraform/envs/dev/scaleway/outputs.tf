@@ -29,3 +29,9 @@ output "kubeconfig" {
   sensitive   = true
   value       = module.kubernetes.kubeconfig
 }
+
+# Consumed by the Cloudflare workspace to create DNS records
+output "traefik_ip" {
+  description = "Traefik LoadBalancer external IP"
+  value       = data.kubernetes_service.traefik.status[0].load_balancer[0].ingress[0].ip
+}

@@ -26,6 +26,46 @@ resource "helm_release" "argocd" {
   create_namespace = true
   wait             = true
   timeout          = 600
+
+  values = [
+    <<-YAML
+    configs:
+      params:
+        server.insecure: true
+        server.basehref: /
+        server.rootpath: ""
+
+      cm:
+        url: ${var.argocd_url}
+
+        users.session.duration: 12h # Match Cloudflare Access session duration
+        dex.config: |
+          oauth2:
+            skipApprovalScreen: true
+          web:
+            allowedOrigins:
+              - ${var.argocd_url}
+          connectors:
+            - type: github
+              id: github
+              name: GitHub
+              config:
+                clientID: ${var.argocd_oidc_client_id}
+                clientSecret: ${var.argocd_oidc_client_secret}
+                redirectURI: ${var.argocd_url}/api/dex/callback
+                orgs:
+                  - name: AppcraftHQ
+
+      # Grants admin to all members of the platform-engineers team in AppcraftHQ
+      rbac:
+        policy.csv: |
+          p, role:admin, applications, *, */*, allow
+          p, role:admin, clusters, get, *, allow
+          p, role:admin, repositories, *, *, allow
+          g, AppcraftHQ:platform-engineers, role:admin
+        policy.default: role:readonly
+  YAML
+  ]
 }
 
 # Create ArgoCD root application (App of Apps)
