@@ -110,9 +110,9 @@ resource "kubernetes_namespace_v1" "dev-real-estate" {
 }
 
 # Creates the Infisical auth secret so the operator can authenticate with Infisical
-resource "kubernetes_secret_v1" "infisical_auth" {
+resource "kubernetes_secret_v1" "infisical_auth_argocd" {
   metadata {
-    name      = "infisical-auth-real-estate"
+    name      = "infisical-auth"
     namespace = "dev-real-estate"
   }
 
