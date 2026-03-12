@@ -83,3 +83,36 @@ resource "kubernetes_secret_v1" "infisical_auth" {
 
   depends_on = [kubernetes_namespace_v1.dev-real-estate]
 }
+
+resource "kubectl_manifest" "argocd_repo_credentials" {
+  yaml_body = <<-YAML
+    apiVersion: secrets.infisical.com/v1alpha1
+    kind: InfisicalSecret
+    metadata:
+      name: argocd-repo-credentials
+      namespace: argocd
+      labels:
+        argocd.argoproj.io/secret-type: repository
+    spec:
+      hostAPI: https://app.infisical.com/api
+      authentication:
+        universalAuth:
+          secretsScope:
+            envSlug: "${var.infisical_env_slug}"
+            secretsPath: "/argocd"
+            projectSlug: "${var.infisical_project_slug}"
+          credentialsRef:
+            secretName: infisical-auth
+            secretNamespace: argocd
+      managedSecretReference:
+        secretName: argocd-github-app-secret
+        secretNamespace: argocd
+        secretType: Opaque
+        creationPolicy: "Owner"
+      resyncInterval: 300
+  YAML
+
+  depends_on = [kubernetes_secret_v1.infisical_auth_argocd]
+}
+
+
