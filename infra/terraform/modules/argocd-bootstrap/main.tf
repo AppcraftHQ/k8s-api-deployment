@@ -124,6 +124,20 @@ resource "kubernetes_secret_v1" "infisical_auth_argocd" {
   depends_on = [kubernetes_namespace_v1.dev-real-estate]
 }
 
+# ArgoCD access GitHub repo via this secret - ArgoCD does not create it
+resource "kubernetes_secret_v1" "infisical_auth_argocd" {
+  metadata {
+    name      = "infisical-auth"
+    namespace = "argocd"
+  }
+  data = {
+    clientId     = var.infisical_client_id
+    clientSecret = var.infisical_client_secret
+  }
+
+  depends_on = [helm_release.argocd]
+}
+
 resource "kubectl_manifest" "argocd_repo_credentials" {
   yaml_body = <<-YAML
     apiVersion: secrets.infisical.com/v1alpha1
