@@ -28,7 +28,7 @@ data "terraform_remote_state" "scaleway" {
   config = {
     organization = "real-estate"
     workspaces = {
-      name = "real-estate-app-cloudflare"
+      name = "real-estate-app"
     }
   }
 }
