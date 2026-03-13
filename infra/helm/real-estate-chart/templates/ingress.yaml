@@ -5,7 +5,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-security-headers@kubernetescrd
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | quote }}
 spec:
   ingressClassName: traefik
   tls:
