@@ -25,7 +25,7 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/Ademayowa/k8s-api-deployment.git
+git clone https://github.com/AppcraftHQ/k8s-api-deployment.git
 ```
 
 ## Setup
