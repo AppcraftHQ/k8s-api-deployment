@@ -26,6 +26,44 @@ resource "helm_release" "argocd" {
   create_namespace = true
   wait             = true
   timeout          = 600
+
+  values = [
+    <<-YAML
+    configs:
+      params:
+        server.insecure: true
+        server.basehref: /
+        server.rootpath: ""
+
+      cm:
+        url: ${var.argocd_url}
+        users.session.duration: 12h
+        dex.config: |
+          oauth2:
+            skipApprovalScreen: true
+          web:
+            allowedOrigins:
+              - ${var.argocd_url}
+          connectors:
+            - type: github
+              id: github
+              name: GitHub
+              config:
+                clientID: ${var.argocd_oidc_client_id}
+                clientSecret: ${var.argocd_oidc_client_secret}
+                redirectURI: ${var.argocd_url}/api/dex/callback
+                orgs:
+                  - name: AppcraftHQ
+
+      rbac:
+        policy.default: role:readonly
+        policy.csv: |
+          p, role:admin, applications,  *, */*,  allow
+          p, role:admin, clusters,      get, *,  allow
+          p, role:admin, repositories,  *, *,    allow
+          g, AppcraftHQ:platform-engineers, role:admin
+    YAML
+  ]
 }
 
 # Create ArgoCD root application (App of Apps)
@@ -82,4 +120,49 @@ resource "kubernetes_secret_v1" "infisical_auth" {
   }
 
   depends_on = [kubernetes_namespace_v1.dev-real-estate]
+}
+
+# ArgoCD access GitHub repo via this secret - ArgoCD does not create it
+resource "kubernetes_secret_v1" "infisical_auth_argocd" {
+  metadata {
+    name      = "infisical-auth"
+    namespace = "argocd"
+  }
+  data = {
+    clientId     = var.infisical_client_id
+    clientSecret = var.infisical_client_secret
+  }
+
+  depends_on = [helm_release.argocd]
+}
+
+resource "kubectl_manifest" "argocd_repo_credentials" {
+  yaml_body = <<-YAML
+    apiVersion: secrets.infisical.com/v1alpha1
+    kind: InfisicalSecret
+    metadata:
+      name: argocd-repo-credentials
+      namespace: argocd
+      labels:
+        argocd.argoproj.io/secret-type: repository
+    spec:
+      hostAPI: https://app.infisical.com/api
+      authentication:
+        universalAuth:
+          secretsScope:
+            envSlug: "${var.infisical_env_slug}"
+            secretsPath: "/argocd"
+            projectSlug: "${var.infisical_project_slug}"
+          credentialsRef:
+            secretName: infisical-auth
+            secretNamespace: argocd
+      managedSecretReference:
+        secretName: argocd-github-app-secret
+        secretNamespace: argocd
+        secretType: Opaque
+        creationPolicy: "Owner"
+      resyncInterval: 300
+  YAML
+
+  depends_on = [kubernetes_secret_v1.infisical_auth_argocd]
 }
