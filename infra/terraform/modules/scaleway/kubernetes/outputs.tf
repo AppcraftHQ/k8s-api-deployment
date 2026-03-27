@@ -44,12 +44,3 @@ output "kubeconfig" {
   value       = scaleway_k8s_cluster.main.kubeconfig[0].config_file
 }
 
-
-# Consumed by the Cloudflare workspace to create DNS records
-output "traefik_ip" {
-  description = "Traefik LoadBalancer external IP - consumed by the Cloudflare Terraform workspace"
-  value = try(
-    data.kubernetes_service.traefik.status[0].load_balancer[0].ingress[0].ip,
-    null # Returns null if Traefik IP is not yet assigned - re-apply after ArgoCD syncs
-  )
-}

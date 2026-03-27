@@ -101,3 +101,14 @@ module "argocd" {
 
   depends_on = [module.kubernetes]
 }
+
+# Reads the Traefik LoadBalancer IP after ArgoCD syncs Traefik.
+# This IP is exposed as an output and consumed by the Cloudflare workspace.
+data "kubernetes_service" "traefik" {
+  metadata {
+    name      = "traefik"
+    namespace = "traefik"
+  }
+
+  depends_on = [module.argocd]
+}
