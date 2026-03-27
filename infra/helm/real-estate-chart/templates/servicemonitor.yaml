@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}-metrics
+  # Must live in the same namespace as kube-prometheus-stack
+  namespace: monitoring
+  labels:
+    app: {{ .Chart.Name }}
+    release: prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}  # watches the app namespace
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  endpoints:
+    - port: metrics       # scrapes internal port 9091 only
+      path: /metrics
+      interval: 30s

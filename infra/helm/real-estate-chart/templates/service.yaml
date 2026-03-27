@@ -1,14 +1,18 @@
-# Service definition for Real Estate application
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.service.name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ .Chart.Name }}-api-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: real-estate
+    app: {{ .Chart.Name }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http
+      port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+    - name: metrics
+      port: 9091
+      targetPort: 9091

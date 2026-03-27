@@ -10,8 +10,8 @@ import (
 func RegisterRoutes(server *gin.Engine) {
 	server.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			"https://example.com",      // Production frontend
-			"https://test.example.com", // Production Golang APIs
+			"https://example.com",          // Production frontend
+			"https://api.mayorstacks.work", // Production Golang APIs
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
@@ -19,6 +19,8 @@ func RegisterRoutes(server *gin.Engine) {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	server.Use(metricsMiddleware())
 
 	server.GET("/properties", GetProperties)
 	server.POST("/properties", CreateProperty)
