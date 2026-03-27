@@ -88,13 +88,16 @@ module "infisical_operator" {
 module "argocd" {
   source = "../../../modules/argocd-bootstrap"
 
-  repo_url                = var.repo_url
-  target_revision         = var.target_revision
-  bootstrap_path          = var.bootstrap_path
-  infisical_client_id     = var.infisical_client_id
-  infisical_client_secret = var.infisical_client_secret
-  infisical_project_slug  = var.infisical_project_slug
-  infisical_env_slug      = var.infisical_env_slug
+  repo_url                  = var.repo_url
+  target_revision           = var.target_revision
+  bootstrap_path            = var.bootstrap_path
+  infisical_client_id       = var.infisical_client_id
+  infisical_client_secret   = var.infisical_client_secret
+  infisical_project_slug    = var.infisical_project_slug
+  infisical_env_slug        = var.infisical_env_slug
+  argocd_oidc_client_id     = var.argocd_oidc_client_id
+  argocd_oidc_client_secret = var.argocd_oidc_client_secret
+  argocd_url                = var.argocd_url
 
   depends_on = [module.kubernetes]
 }

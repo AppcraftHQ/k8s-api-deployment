@@ -40,3 +40,20 @@ variable "infisical_project_slug" {
   description = "Infisical project slug"
   type        = string
 }
+
+variable "argocd_oidc_client_id" {
+  description = "GitHub OAuth App Client ID for ArgoCD OIDC login"
+  type        = string
+  sensitive   = true
+}
+
+variable "argocd_oidc_client_secret" {
+  description = "GitHub OAuth App Client Secret for ArgoCD OIDC login"
+  type        = string
+  sensitive   = true
+}
+
+variable "argocd_url" {
+  description = "Public URL for ArgoCD"
+  type        = string
+}
