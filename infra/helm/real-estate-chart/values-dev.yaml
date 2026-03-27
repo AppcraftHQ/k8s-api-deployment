@@ -23,6 +23,7 @@ ingress:
   host: estate.mayorstacks.work # remove this later
   tlsSecretName: api-estate-tls
   clusterIssuer: "letsencrypt-staging"
+
 namespace: dev-real-estate
 
 config:
