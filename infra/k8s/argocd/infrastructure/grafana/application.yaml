@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+  annotations:
+    # Wave 2: depends on prometheus-operator-crds and monitoring being healthy
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: grafana
+      targetRevision: 8.10.4
+      helm:
+        valueFiles:
+          # $values resolves to the Git repo source below
+          - $values/infra/helm/grafana/values-dev.yaml
+
+    # Git repo aliased as $values — provides the values file for the chart above
+    - repoURL: https://github.com/AppcraftHQ/k8s-api-deployment
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - ServerSideDiff=true
