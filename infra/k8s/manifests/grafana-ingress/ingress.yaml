@@ -1,0 +1,32 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.mayorstacks.work`)
+      kind: Rule
+      middlewares:
+        - name: security-headers
+          namespace: traefik
+      services:
+        - name: monitoring-grafana
+          port: 80
+  tls:
+    secretName: grafana-estate-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-estate-tls
+  namespace: monitoring
+spec:
+  secretName: grafana-estate-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana.mayorstacks.work

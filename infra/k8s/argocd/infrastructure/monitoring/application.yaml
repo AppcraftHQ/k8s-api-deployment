@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    # Wave 2: depends on prometheus-operator-crds (wave 1) being fully healthy
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 82.10.1
+      helm:
+        valueFiles:
+          # $values resolves to the Git repo source below
+          - $values/infra/helm/monitoring/values-dev.yaml
+
+    # Git repo aliased as $values -- provides the values file for the chart above
+    - repoURL: https://github.com/AppcraftHQ/k8s-api-deployment
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - ServerSideDiff=true

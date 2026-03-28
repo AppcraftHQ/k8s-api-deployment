@@ -166,3 +166,26 @@ resource "kubectl_manifest" "argocd_repo_credentials" {
 
   depends_on = [kubernetes_secret_v1.infisical_auth_argocd]
 }
+
+
+resource "kubernetes_namespace_v1" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+
+  depends_on = [kubectl_manifest.argocd_root_app]
+}
+
+resource "kubernetes_secret_v1" "infisical_auth_monitoring" {
+  metadata {
+    name      = "infisical-auth-monitoring"
+    namespace = "monitoring"
+  }
+
+  data = {
+    clientId     = var.infisical_client_id
+    clientSecret = var.infisical_client_secret
+  }
+
+  depends_on = [kubernetes_namespace_v1.monitoring]
+}

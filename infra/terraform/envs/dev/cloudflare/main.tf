@@ -49,3 +49,11 @@ resource "cloudflare_record" "api" {
   type    = "A"
   proxied = true
 }
+
+resource "cloudflare_record" "grafana" {
+  zone_id = var.cloudflare_zone_id
+  name    = "grafana"
+  content = data.terraform_remote_state.scaleway.outputs.traefik_ip
+  type    = "A"
+  proxied = true
+}

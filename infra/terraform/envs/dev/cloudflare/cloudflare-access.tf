@@ -19,3 +19,23 @@ resource "cloudflare_access_policy" "argocd_admin" {
     email = var.allowed_emails
   }
 }
+
+resource "cloudflare_access_application" "grafana" {
+  account_id       = var.cloudflare_account_id
+  name             = "Grafana"
+  domain           = "grafana.mayorstacks.work"
+  session_duration = "12h"
+  type             = "self_hosted"
+}
+
+resource "cloudflare_access_policy" "grafana_admin" {
+  account_id     = var.cloudflare_account_id
+  application_id = cloudflare_access_application.grafana.id
+  name           = "Grafana Admin Access"
+  precedence     = 1
+  decision       = "allow"
+
+  include {
+    email = var.allowed_emails
+  }
+}

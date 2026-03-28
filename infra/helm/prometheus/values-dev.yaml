@@ -1,0 +1,54 @@
+# kube-prometheus-stack -- dev environment
+
+# CRDs managed separately by prometheus-operator-crds ArgoCD app
+crds:
+  enabled: false
+
+prometheusOperator:
+  # Prevent automountServiceAccountToken -- causes ArgoCD schema validation errors
+  serviceAccount:
+    automountServiceAccountToken: false
+  resources:
+    limits:
+      memory: 200Mi
+
+prometheus:
+  serviceAccount:
+    automountServiceAccountToken: false
+  prometheusSpec:
+    retention: 24h
+    # Tuned for single-node dev cluster with minimal traffic
+    resources:
+      requests:
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          # Scaleway Block SSD -- default storage class
+          storageClassName: sbs-default
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 2Gi
+    # Discover ServiceMonitors across all namespaces
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}
+
+alertmanager:
+  enabled: false
+
+# Grafana disabled -- deployed separately via standalone chart for full sidecar support
+grafana:
+  enabled: false
+
+kube-state-metrics:
+  serviceAccount:
+    automountServiceAccountToken: false
+
+prometheus-node-exporter:
+  serviceAccount:
+    automountServiceAccountToken: false
