@@ -1,0 +1,59 @@
+# Grafana -- dev environment
+
+# Grafana reads admin credentials from Infisical-managed secret
+admin:
+  existingSecret: grafana-admin-secret
+  userKey: ADMIN_USER
+  passwordKey: ADMIN_PASSWORD
+
+resources:
+  requests:
+    memory: 128Mi
+  limits:
+    memory: 400Mi
+
+# Prevent automountServiceAccountToken -- consistent with rest of platform
+serviceAccount:
+  automountServiceAccountToken: false
+
+ingress:
+  enabled: false
+
+# Set root URL so alert silence links point to the correct domain
+grafana.ini:
+  server:
+    root_url: https://grafana.mayorstacks.work
+
+# Datasource -- points to Prometheus in the monitoring namespace
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://monitoring-kube-prometheus-prometheus.monitoring:9090
+        isDefault: true
+        uid: prometheus
+
+# Auto-load dashboards, datasources and alerting from labeled ConfigMaps
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "1"
+    searchNamespace: ALL
+  datasources:
+    enabled: true
+    label: grafana_datasource
+    labelValue: "1"
+    searchNamespace: ALL
+  alerts:
+    enabled: true
+    label: grafana_alerting
+    labelValue: "1"
+    searchNamespace: ALL
+
+persistence:
+  enabled: true
+  storageClassName: sbs-default
+  size: 1Gi
