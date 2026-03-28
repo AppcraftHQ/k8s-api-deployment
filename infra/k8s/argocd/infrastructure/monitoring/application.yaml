@@ -16,7 +16,7 @@ spec:
       helm:
         valueFiles:
           # $values resolves to the Git repo source below
-          - $values/infra/helm/monitoring/values-dev.yaml
+          - $values/infra/helm/prometheus/values-dev.yaml
 
     # Git repo aliased as $values -- provides the values file for the chart above
     - repoURL: https://github.com/AppcraftHQ/k8s-api-deployment
