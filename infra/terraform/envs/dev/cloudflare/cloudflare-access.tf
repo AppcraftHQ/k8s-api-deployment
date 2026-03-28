@@ -2,7 +2,7 @@
 resource "cloudflare_access_application" "argocd" {
   account_id       = var.cloudflare_account_id
   name             = "ArgoCD"
-  domain           = "estate.mayorstacks.work"
+  domain           = "argocd.mayorstacks.work"
   session_duration = "12h"
   type             = "self_hosted"
 }

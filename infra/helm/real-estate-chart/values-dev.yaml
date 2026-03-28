@@ -20,7 +20,7 @@ service:
 ingress:
   enabled: true
   name: real-estate-ingress
-  host: estate.mayorstacks.work # remove this later
+  host: api.mayorstacks.work # remove this later
   tlsSecretName: api-estate-tls
   clusterIssuer: "letsencrypt-staging"
 
