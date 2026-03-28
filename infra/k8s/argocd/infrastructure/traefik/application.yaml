@@ -3,9 +3,11 @@ kind: Application
 metadata:
   name: traefik
   namespace: argocd
+  annotations:
+    # Wave 1: core ingress controller -- Grafana and ArgoCD ingress depend on this
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
-
   source:
     repoURL: https://traefik.github.io/charts
     chart: traefik
@@ -18,14 +20,22 @@ spec:
           websecure:
             tls:
               enabled: true
+          metrics:
+            port: 9100
+            expose: true
+            exposedPort: 9100
         providers:
           kubernetesCRD:
             allowCrossNamespace: true
-
+        # Exposes Traefik metrics on port 9100 and creates a ServiceMonitor for Prometheus scraping
+        metrics:
+          prometheus:
+            entryPoint: metrics
+            service:
+              enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
-
   syncPolicy:
     automated:
       prune: true
