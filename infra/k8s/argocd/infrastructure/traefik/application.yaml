@@ -4,7 +4,6 @@ metadata:
   name: traefik
   namespace: argocd
   annotations:
-    # Wave 1: core ingress controller -- Grafana and ArgoCD ingress depend on this
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
@@ -26,8 +25,22 @@ spec:
             exposedPort: 9100
         providers:
           kubernetesCRD:
-            allowCrossNamespace: true
-        # Exposes Traefik metrics on port 9100 and creates a ServiceMonitor for Prometheus scraping
+            allowCrossNamespace: false
+            namespaces:
+              - traefik
+              - monitoring
+              - dev-real-estate
+              - argocd
+          kubernetesIngress:
+            enabled: true
+            allowCrossNamespace: false
+            namespaces:
+              - traefik
+              - monitoring
+              - dev-real-estate
+              - argocd
+            publishedService:
+              enabled: true
         metrics:
           prometheus:
             entryPoint: metrics
